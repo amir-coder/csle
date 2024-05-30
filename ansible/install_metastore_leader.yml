@@ -5,20 +5,20 @@
   tasks:
 
     - name: Clear create_cluster.sql file
-      shell: "rm /home/{{ user }}/csle/metastore/create_cluster.sql; touch /home/{{ user }}/csle/metastore/create_cluster.sql"
+      shell: "rm /home/local/USHERBROOKE/alma5467/csle/metastore/create_cluster.sql; touch /home/local/USHERBROOKE/alma5467/csle/metastore/create_cluster.sql"
 
     - name: Add leader to create_cluster.sql file
-      shell: echo  SELECT "citus_set_coordinator_host('{{ leader_ip }}', {{ citus_port }});" >> "/home/{{ user }}/csle/metastore/create_cluster.sql"
+      shell: echo  SELECT "citus_set_coordinator_host('{{ leader_ip }}', {{ citus_port }});" >> "/home/local/USHERBROOKE/alma5467/csle/metastore/create_cluster.sql"
 
     - name: Add workers to create_cluster.sql file
-      shell: echo  SELECT "citus_add_node('{{ item }}', {{ citus_port }});" >> "/home/{{ user }}/csle/metastore/create_cluster.sql"
+      shell: echo  SELECT "citus_add_node('{{ item }}', {{ citus_port }});" >> "/home/local/USHERBROOKE/alma5467/csle/metastore/create_cluster.sql"
       loop: "{{ groups['worker'] }}"
 
     - name: Copy create_tables.sql script to postgres home
       become: true
       copy:
         dest: /var/lib/postgresql/create_tables.sql
-        src: "/home/{{ user }}/csle/metastore/create_tables.sql"
+        src: "/home/local/USHERBROOKE/alma5467/csle/metastore/create_tables.sql"
         remote_src: yes
         owner: postgres
         group: postgres
@@ -28,7 +28,7 @@
       become: true
       copy:
         dest: /var/lib/postgresql/create_cluster.sql
-        src: "/home/{{ user }}/csle/metastore/create_cluster.sql"
+        src: "/home/local/USHERBROOKE/alma5467/csle/metastore/create_cluster.sql"
         remote_src: yes
         owner: postgres
         group: postgres

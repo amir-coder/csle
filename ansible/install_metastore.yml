@@ -1,7 +1,6 @@
 ---
 
 - hosts: all
-
   tasks:
 
     - name: Check if PostgreSQL is installed, if you see error here just ignore it!
@@ -12,13 +11,13 @@
     - name: Download PostgreSQL
       ansible.builtin.get_url:
         url: "{{ postgresql_url }}"
-        dest: "/home/{{ user }}"
+        dest: "~"
         mode: '0770'
       when: postgresql_installed.rc != 0
 
     - name: Install PostgreSQL
       become: true
-      shell: "/home/{{ user }}/deb.sh"
+      shell: "~/deb.sh"
       when: postgresql_installed.rc != 0
 
     - name: Install PostgreSQL Citus extension
@@ -98,7 +97,7 @@
       become: true
       copy:
         dest: /var/lib/postgresql/create_db.sql
-        src: "/home/{{ user }}/csle/metastore/create_db.sql"
+        src: "/home/local/USHERBROOKE/alma5467/csle/metastore/create_db.sql"
         remote_src: yes
         owner: postgres
         group: postgres

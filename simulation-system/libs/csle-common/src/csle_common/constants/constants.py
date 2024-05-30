@@ -1614,7 +1614,7 @@ class METADATA_STORE:
     DBNAME = "csle"
     USER = "csle"
     PASSWORD = "csle"
-    HOST = "172.31.212.92"
+    HOST = "10.44.102.32"
     TRACES_PROPERTY = "traces"
     DB_NAME_PROPERTY = "dbname"
     PW_PROPERTY = "password"

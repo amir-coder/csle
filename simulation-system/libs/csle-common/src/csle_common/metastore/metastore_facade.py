@@ -726,6 +726,7 @@ class MetastoreFacade:
         :param id: the id of the simulation trace
         :return: The simulation trace or None if it could not be found
         """
+        
         with psycopg.connect(f"{constants.METADATA_STORE.DB_NAME_PROPERTY}={constants.METADATA_STORE.DBNAME} "
                              f"{constants.METADATA_STORE.USER_PROPERTY}={constants.METADATA_STORE.USER} "
                              f"{constants.METADATA_STORE.PW_PROPERTY}={constants.METADATA_STORE.PASSWORD} "

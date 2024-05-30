@@ -77,14 +77,14 @@
 
     - name: Pulling base Docker images
       become: true
-      shell: "cd /home/{{ user }}/csle/emulation-system/base_images && make pull"
+      shell: "cd /home/local/USHERBROOKE/alma5467/csle/emulation-system/base_images && make pull"
       args:
         executable: /bin/bash
       when: not base_images_pulled
 
     - name: Pulling derived Docker images
       become: true
-      shell: "cd /home/{{ user }}/csle/emulation-system/derived_images && make pull"
+      shell: "cd /home/local/USHERBROOKE/alma5467/csle/emulation-system/derived_images && make pull"
       args:
         executable: /bin/bash
       when: not derived_images_pulled

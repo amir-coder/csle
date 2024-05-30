@@ -23,7 +23,7 @@
         emulation_environments_installed: "{{ emulations.rowcount > 0 }}"
 
     - name: Installing the emulation environments on the leader node
-      shell: "source /home/{{ user }}/anaconda3/bin/activate {{ conda_environment_name }}; cd /home/{{ user }}/csle/emulation-system/envs && make install"
+      shell: "source ~/anaconda3/bin/activate {{ conda_environment_name }}; cd ~/csle/emulation-system/envs && make install"
       args:
         executable: /bin/bash
       when: not emulation_environments_installed
