@@ -15,14 +15,16 @@ from csle_common.dao.training.policy_type import PolicyType
 from csle_agents.common.objective_type import ObjectiveType
 
 
-def get_obs_tensor():
+def get_obs_tensor(emulation_name: str):
     """
     Utility function to get the observation tensor from a given emulation statistic
 
     :return: the emulation statistic
     """
-    model = MetastoreFacade.get_emulation_statistic(id=1)
+    model = MetastoreFacade.get_emulation_statistic_by_name(name=emulation_name)
     model.compute_descriptive_statistics_and_distributions()
+
+    print(model)
     intrusion_counts = model.conditionals_counts[constants.SYSTEM_IDENTIFICATION.INTRUSION_CONDITIONAL][
         "alerts_weighted_by_priority"]
     no_intrusion_counts = model.conditionals_counts[constants.SYSTEM_IDENTIFICATION.NO_INTRUSION_CONDITIONAL][
@@ -119,7 +121,7 @@ def get_obs_tensor():
 
 
 if __name__ == '__main__':
-    emulation_env_name = "csle-level9-030"
+    emulation_env_name = "csle-level9-060"
     emulation_env_config = MetastoreFacade.get_emulation_by_name(emulation_env_name)
     if emulation_env_config is None:
         raise ValueError(f"Could not find an emulation with name: {emulation_env_name}")
@@ -195,7 +197,7 @@ if __name__ == '__main__':
     simulation_env_config.simulation_env_input_config.stopping_game_config.R = list(StoppingGameUtil.reward_tensor(
         R_INT=-1, R_COST=-2, R_SLA=0, R_ST=20, L=3))
     simulation_env_config.simulation_env_input_config.stopping_game_config.d_b1 = np.array([0.99, 0.01, 0])
-    Z, O = get_obs_tensor()
+    Z, O = get_obs_tensor(emulation_name="csle-level9-060")
     simulation_env_config.simulation_env_input_config.stopping_game_config.Z = Z
     simulation_env_config.simulation_env_input_config.stopping_game_config.O = O
     simulation_env_config.simulation_env_input_config.stopping_game_config.gamma = 0.99

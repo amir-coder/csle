@@ -66,6 +66,6 @@ csle_config:
       - ip: "10.44.102.32"
         leader: true
         cpus: 8
-        gpus: 0
-        RAM: 64
+        gpus: 1
+        RAM: 15
   allow_registration: true
