@@ -260,6 +260,11 @@ class StoppingGameUtil:
                 observation_probs.append(Z[0][s_prime][o])
             elif len(Z.shape) == 2:
                 observation_probs.append(Z[s_prime][o])
+
+        #normalilzing if need
+        proba_sum = np.sum(observation_probs)
+        if not np.isclose(proba_sum, 1):
+            observation_probs = [x/proba_sum for x in observation_probs]
         o = np.random.choice(np.arange(0, len(O)), p=observation_probs)
         return int(o)
 

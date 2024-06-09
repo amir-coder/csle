@@ -698,6 +698,27 @@ class MetastoreFacade:
                 return record
 
     @staticmethod
+    def get_emulation_statistic_by_name(name: str) -> Union[None, EmulationStatistics]:
+        """
+        Function for fetching an emulation satistic with a given id from the metastore
+
+        :param id: the id of the statistics
+        :return: The emulation statistic or None if it could not be found
+        """
+        with psycopg.connect(f"{constants.METADATA_STORE.DB_NAME_PROPERTY}={constants.METADATA_STORE.DBNAME} "
+                             f"{constants.METADATA_STORE.USER_PROPERTY}={constants.METADATA_STORE.USER} "
+                             f"{constants.METADATA_STORE.PW_PROPERTY}={constants.METADATA_STORE.PASSWORD} "
+                             f"{constants.METADATA_STORE.HOST_PROPERTY}={constants.METADATA_STORE.HOST}") as conn:
+            with conn.cursor() as cur:
+                cur.execute(f"SELECT * FROM {constants.METADATA_STORE.EMULATION_STATISTICS_TABLE} "
+                            f"WHERE emulation_name = %s", (name,))
+                record = cur.fetchone()
+                if record is not None:
+                    record = MetastoreFacade._convert_emulation_statistics_record_to_dto(
+                        emulation_statistics_record=record)
+                return record
+
+    @staticmethod
     def remove_emulation_statistic(emulation_statistic: EmulationStatistics) -> None:
         """
         Removes an emulation statistic from the metastore

@@ -1068,6 +1068,7 @@ class ClusterController:
         :param ip_first_octet: the ID of the execution
         :return: The operation outcome
         """
+        stub.applyPacketBeatsConfig('applyPacketBeatsConfig operation message', timeout=60) #increase timeout value
         # Open a gRPC session
         with grpc.insecure_channel(f'{ip}:{port}', options=constants.GRPC_SERVERS.GRPC_OPTIONS) as channel:
             stub = csle_cluster.cluster_manager.cluster_manager_pb2_grpc.ClusterManagerStub(channel)
