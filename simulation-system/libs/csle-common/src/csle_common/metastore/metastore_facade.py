@@ -700,7 +700,7 @@ class MetastoreFacade:
     @staticmethod
     def get_emulation_statistic_by_name(name: str) -> Union[None, EmulationStatistics]:
         """
-        Function for fetching an emulation satistic with a given id from the metastore
+        Function for fetching an emulation satistic with a given name from the metastore
 
         :param id: the id of the statistics
         :return: The emulation statistic or None if it could not be found

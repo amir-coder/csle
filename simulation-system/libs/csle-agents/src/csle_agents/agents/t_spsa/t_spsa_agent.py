@@ -53,6 +53,7 @@ class TSPSAAgent(BaseAgent):
                          experiment_config=experiment_config)
         assert experiment_config.agent_type == AgentType.T_SPSA
         self.env = env
+        self.eval_env = env
         self.training_job = training_job
         self.save_to_metastore = save_to_metastore
 
@@ -158,7 +159,7 @@ class TSPSAAgent(BaseAgent):
 
         config = self.simulation_env_config.simulation_env_input_config
         if self.env is None:
-            self.env = gym.make(self.simulation_env_config.gym_env_name, config=config)
+            self.env = self.experiment_config.poisoning_strategie.env_wrapper(gym.make(self.simulation_env_config.gym_env_name, config=config))
         for seed in self.experiment_config.random_seeds:
             ExperimentUtil.set_seed(seed)
             exp_result = self.spsa(exp_result=exp_result, seed=seed, training_job=self.training_job,
