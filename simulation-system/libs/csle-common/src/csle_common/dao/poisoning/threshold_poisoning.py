@@ -25,7 +25,7 @@ class PoisonedEnvWrapper(BaseEnv):
         self.reward_range = env.reward_range
         self.metadata = env.metadata
 
-    def step(self, action, attack_mode=False):
+    def step(self, action, attack_mode=True):
         observation, reward, done, _, info = self.env.step(action)
         if attack_mode:
             # Apply the poisoning strategy to the observation
