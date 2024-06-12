@@ -2,7 +2,7 @@ from typing import List, Dict, Any
 from csle_common.dao.training.agent_type import AgentType
 from csle_common.dao.training.player_type import PlayerType
 from csle_common.dao.training.hparam import HParam
-from csle_common.dao.poisoning.threshold_poisoning import ThresholdPoisoning
+from csle_common.dao.poisoning.env_poisoning import EnvPoisoning
 from csle_base.json_serializable import JSONSerializable
 
 
@@ -13,7 +13,7 @@ class ExperimentConfig(JSONSerializable):
 
     def __init__(self, output_dir: str, title: str, random_seeds: List[int], agent_type: AgentType,
                  hparams: Dict[str, HParam], log_every: int, player_type: PlayerType, player_idx: int,
-                 br_log_every: int = 10, poisoning_strategie: ThresholdPoisoning = None):
+                 br_log_every: int = 10, poisoning_strategie: EnvPoisoning = None):
         """
         Initializes the DTO
 

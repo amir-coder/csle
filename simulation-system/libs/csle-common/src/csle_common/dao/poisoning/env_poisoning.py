@@ -6,7 +6,7 @@ from csle_common.dao.simulation_config.simulation_trace import SimulationTrace
 
 class EnvPoisoning(ABC):
     @abstractmethod
-    def attack_callback(self, observation: List[float], reward: float, done: bool, info: dict, iteration: int) -> List[float]:
+    def attack_callback(self, observation: List[float], reward: float, done: bool, info: dict, iteration: int):
         pass
 
     def env_wrapper(self, env: BaseEnv):
@@ -34,11 +34,11 @@ class PoisonedEnvWrapper(BaseEnv):
         return observation, reward, done, done, info
 
     def reset(self, **kwargs):
-        observation = self.env.reset(**kwargs)
+        observation, reward, done, _, info = self.env.reset(**kwargs)
         # Apply the poisoning strategy to the observation
-        poisoned_observation = self.poisoning_strategy.attack_callback(observation, 0, self.iteration)
+        observation, reward, done, _, info = self.poisoning_strategy.attack_callback(observation, reward, done, done, info, self.iteration)
         self.iteration = 0
-        return poisoned_observation
+        return observation, reward, done, _, info
 
     def render(self, mode='human'):
         return self.env.render(mode)
