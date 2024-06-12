@@ -4,16 +4,16 @@ from csle_common.dao.simulation_config.base_env import BaseEnv
 from csle_common.dao.simulation_config.simulation_trace import SimulationTrace
 
 
-class ThresholdPoisoning(ABC):
+class EnvPoisoning(ABC):
     @abstractmethod
-    def attack_callback(self, observation: List[float], reward: float, iteration: int) -> List[float]:
+    def attack_callback(self, observation: List[float], reward: float, done: bool, info: dict, iteration: int) -> List[float]:
         pass
 
     def env_wrapper(self, env: BaseEnv):
         return PoisonedEnvWrapper(env, self)
 
 class PoisonedEnvWrapper(BaseEnv):
-    def __init__(self, env: BaseEnv, poisoning_strategy: ThresholdPoisoning):
+    def __init__(self, env: BaseEnv, poisoning_strategy: EnvPoisoning):
         super().__init__()
         self.env = env
         self.poisoning_strategy = poisoning_strategy
@@ -28,8 +28,8 @@ class PoisonedEnvWrapper(BaseEnv):
     def step(self, action, attack_mode=True):
         observation, reward, done, _, info = self.env.step(action)
         if attack_mode:
-            # Apply the poisoning strategy to the observation
-            observation = self.poisoning_strategy.attack_callback(observation, reward, self.iteration)
+            # Apply the poisoning strategy to the env step returns
+            observation, reward, done, _, info = self.poisoning_strategy.attack_callback(observation, reward, done, done, info, self.iteration)
         self.iteration += 1
         return observation, reward, done, done, info
 
