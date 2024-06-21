@@ -57,7 +57,7 @@ class TSPSAAgent(BaseAgent):
         self.training_job = training_job
         self.save_to_metastore = save_to_metastore
 
-    def train(self) -> ExperimentExecution:
+    def train(self, meta_agent = None) -> ExperimentExecution:
         """
         Performs the policy training for the given random seeds using T-SPSA
 
@@ -159,7 +159,7 @@ class TSPSAAgent(BaseAgent):
 
         config = self.simulation_env_config.simulation_env_input_config
         if self.env is None:
-            self.env = self.experiment_config.poisoning_strategie.env_wrapper(gym.make(self.simulation_env_config.gym_env_name, config=config))
+            self.env = self.experiment_config.poisoning_strategie.env_wrapper(gym.make(self.simulation_env_config.gym_env_name, config=config), meta_agent=self.experiment_config.meta_agent)
         for seed in self.experiment_config.random_seeds:
             ExperimentUtil.set_seed(seed)
             exp_result = self.spsa(exp_result=exp_result, seed=seed, training_job=self.training_job,
