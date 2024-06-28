@@ -68,7 +68,16 @@ class StoppingGameEnv(BaseEnv):
             r = 0
         else:
             # Compute r, s', b',o'
-            r = self.config.R[self.state.l - 1][a1][a2][self.state.s]
+            try :
+                r = self.config.R[self.state.l - 1][a1][a2][self.state.s]
+            except IndexError as e:
+                print(f'reward vec len {len(self.config.R)}')
+                print(f'self.state.l  {self.state.l }')
+                print(f'reward vec[l] len {len(self.config.R[self.state.l - 1])}')
+                print(f'reward vec[l][a1] len {len(self.config.R[self.state.l - 1][a1])}')
+                print(f'reward vec[l][a1][a2] len {len(self.config.R[self.state.l - 1][a1][a2])}')
+                print(f'reward vec[l][a1][a2][self.state.s] len {len(self.config.R[self.state.l - 1][a1][a2][self.state.s])}')
+                raise ValueError('L value is not correct')
             self.state.s = StoppingGameUtil.sample_next_state(l=self.state.l, a1=a1, a2=a2, T=self.config.T,
                                                               S=self.config.S, s=self.state.s)
             o = StoppingGameUtil.sample_next_observation(Z=self.config.Z,

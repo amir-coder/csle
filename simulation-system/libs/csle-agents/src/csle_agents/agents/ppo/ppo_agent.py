@@ -28,6 +28,7 @@ from csle_common.util.general_util import GeneralUtil
 from csle_common.dao.simulation_config.base_env import BaseEnv
 from csle_agents.agents.base.base_agent import BaseAgent
 import csle_agents.constants.constants as agents_constants
+import gym_csle_stopping_game.constants.constants as env_constants
 
 
 class PPOAgent(BaseAgent):
@@ -67,6 +68,8 @@ class PPOAgent(BaseAgent):
         exp_result.plot_metrics.append(agents_constants.COMMON.AVERAGE_RETURN)
         exp_result.plot_metrics.append(agents_constants.COMMON.RUNNING_AVERAGE_RETURN)
         exp_result.plot_metrics.append(agents_constants.COMMON.RUNNING_AVERAGE_TIME_HORIZON)
+        exp_result.plot_metrics.append(agents_constants.COMMON.RUNNING_AVERAGE_INTRUSION_LENGTH)
+        exp_result.plot_metrics.append(env_constants.ENV_METRICS.INTRUSION_LENGTH)
         exp_result.plot_metrics.append(agents_constants.COMMON.AVERAGE_TIME_HORIZON)
         exp_result.plot_metrics.append(agents_constants.COMMON.AVERAGE_UPPER_BOUND_RETURN)
         exp_result.plot_metrics.append(agents_constants.COMMON.AVERAGE_RANDOM_RETURN)
@@ -115,7 +118,8 @@ class PPOAgent(BaseAgent):
 
         # Setup gym environment
         config = self.simulation_env_config.simulation_env_input_config
-        orig_env: BaseEnv = gymnasium.make(self.simulation_env_config.gym_env_name, config=config)
+        
+        orig_env: BaseEnv = self.experiment_config.poisoning_strategie.env_wrapper(gymnasium.make(self.simulation_env_config.gym_env_name, config=config), meta_agent=self.experiment_config.meta_agent)
         env = make_vec_env(env_id=self.simulation_env_config.gym_env_name,
                            n_envs=self.experiment_config.hparams[agents_constants.COMMON.NUM_PARALLEL_ENVS].value,
                            env_kwargs={"config": config}, vec_env_cls=DummyVecEnv)
@@ -127,6 +131,8 @@ class PPOAgent(BaseAgent):
             exp_result.all_metrics[seed] = {}
             exp_result.all_metrics[seed][agents_constants.COMMON.AVERAGE_RETURN] = []
             exp_result.all_metrics[seed][agents_constants.COMMON.RUNNING_AVERAGE_RETURN] = []
+            exp_result.all_metrics[seed][agents_constants.COMMON.RUNNING_AVERAGE_INTRUSION_LENGTH] = []
+            exp_result.all_metrics[seed][env_constants.ENV_METRICS.INTRUSION_LENGTH] = []
             exp_result.all_metrics[seed][agents_constants.COMMON.RUNNING_AVERAGE_TIME_HORIZON] = []
             exp_result.all_metrics[seed][agents_constants.COMMON.AVERAGE_TIME_HORIZON] = []
             exp_result.all_metrics[seed][agents_constants.COMMON.AVERAGE_UPPER_BOUND_RETURN] = []
@@ -208,6 +214,7 @@ class PPOAgent(BaseAgent):
             # Save latest trace
             if self.save_to_metastore and len(orig_env.get_traces()) > 0:
                 MetastoreFacade.save_simulation_trace(orig_env.get_traces()[-1])
+            orig_env.save_to_json(filename=f'reward_vectors_{seed}.json')
             orig_env.reset_traces()
 
         # Calculate average and std metrics
@@ -425,6 +432,14 @@ class PPOTrainingCallback(BaseCallback):
                     avg_upper_bounds.append(info[agents_constants.ENV_METRICS.AVERAGE_UPPER_BOUND_RETURN])
                 else:
                     avg_upper_bounds.append(-1)
+                if env_constants.ENV_METRICS.INTRUSION_LENGTH in info:
+                    self.exp_result.all_metrics[self.seed][env_constants.ENV_METRICS.INTRUSION_LENGTH].append(info[env_constants.ENV_METRICS.INTRUSION_LENGTH])
+                else:
+                    self.exp_result.all_metrics[self.seed][env_constants.ENV_METRICS.INTRUSION_LENGTH].append(-1)
+            self.exp_result.all_metrics[self.seed][agents_constants.COMMON.RUNNING_AVERAGE_INTRUSION_LENGTH].append(
+                ExperimentUtil.running_average(
+            self.exp_result.all_metrics[self.seed][env_constants.ENV_METRICS.INTRUSION_LENGTH],
+            self.experiment_config.hparams[agents_constants.COMMON.RUNNING_AVERAGE].value))
             avg_R = np.mean(avg_rewards)
             avg_T = np.mean(avg_horizons)
             avg_random_return = np.mean(avg_random_returns)
